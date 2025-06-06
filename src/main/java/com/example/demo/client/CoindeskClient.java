@@ -10,7 +10,7 @@ import java.util.Map;
 
 @FeignClient(name = "coindeskClient", url = "${coindesk.api.url}")
 public interface CoindeskClient {
-    @GetMapping("/coindesk.json")
+    @GetMapping("/blog/coindesk.json")
     CoindeskResponse getCoindeskData();
 
     @Data
