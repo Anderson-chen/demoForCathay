@@ -24,7 +24,7 @@ public interface CoindeskClient {
         @Data
         public static class Time {
             private String updated;
-            private OffsetDateTime updatedISO;
+            private String updatedISO;
             private String updateduk;
         }
 

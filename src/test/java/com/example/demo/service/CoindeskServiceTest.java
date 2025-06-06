@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest
@@ -21,21 +23,34 @@ class CoindeskServiceTest {
     CoindeskService coindeskServicel;
 
     @Test
-    void
-    testCallCoindesk() {
-
-//        = new LocalDateTime();
-//
-//        coindeskServicel.convertTime(new OffsetDateTime());
+    void testConvertTimeForUpdated() {
+        String input = "Sep 2, 2024 07:07:20 UTC";
+        String expected = "2024/09/02 07:07:20";
+        String actual = coindeskServicel.convertTime(1, input);
+        assertEquals(expected, actual);
     }
 
+    @Test
+    void testConvertTimeForUpdatedISO() {
+        String input = "2024-09-02T07:07:20+00:00";
+        String expected = "2024/09/02 07:07:20";
+        String actual = coindeskServicel.convertTime(2, input);
+        assertEquals(expected, actual);
+    }
 
     @Test
-    void testTime() {
+    void testConvertTimeForUpdateduk() {
+        String input = "Sep 2, 2024 at 08:07 BST";
+        String expected = "2024/09/02 08:07:00";
+        String actual = coindeskServicel.convertTime(3, input);
+        assertEquals(expected, actual);
+    }
 
-//       Date date  = new OffsetDateTime("2024-09-02T07:07:20+00:00");
-        System.out.println(coindeskServicel.callCoindesk().getTime().getUpdated());
-
+    @Test
+    void testConvertTimeThrowError() {
+        assertThatThrownBy(() -> coindeskServicel.convertTime(99, ""))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Unsupported time type: 99");
     }
 
     @Test

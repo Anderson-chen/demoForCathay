@@ -10,8 +10,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -45,10 +48,14 @@ public class CoindeskService {
         CoindeskVo coindeskVo = new CoindeskVo();
 
         //時間轉換
+        CoindeskClient.CoindeskResponse.Time time = fetchData.getTime();
+        coindeskVo.setUpdated(convertTime(1, time.getUpdated()));
+        coindeskVo.setUpdatedISO(convertTime(2, time.getUpdatedISO()));
+        coindeskVo.setUpdateduk(convertTime(3, time.getUpdateduk()));
+
 
         //幣別中英轉換
-        List<CoindeskVo.Currency> currencyVoList = convertZH(fetchData.getBpi(), currency);
-        coindeskVo.setCurrencyList(currencyVoList);
+        coindeskVo.setCurrencyList(convertZH(fetchData.getBpi(), currency));
 
         return coindeskVo;
     }
@@ -60,13 +67,30 @@ public class CoindeskService {
      * @param updateTime 原始時間格式
      * @return 轉換結果
      */
-    public String convertTime(OffsetDateTime updateTime) {
+    public String convertTime(int type, String updateTime) {
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        switch (type) {
+            case 1: // updated: "Sep 2, 2024 07:07:20 UTC"
+                DateTimeFormatter updatedFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy HH:mm:ss z", Locale.ENGLISH);
+                ZonedDateTime updatedTime = ZonedDateTime.parse(updateTime, updatedFormatter);
+                return updatedTime.format(outputFormatter);
 
+            case 2: // updatedISO: "2024-09-02T07:07:20+00:00"
+                OffsetDateTime offsetTime = OffsetDateTime.parse(updateTime);
+                return offsetTime.format(outputFormatter);
 
-        return null;
+            case 3: // updateduk: "Sep 2, 2024 at 08:07 BST"
+                DateTimeFormatter ukFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy 'at' HH:mm z", Locale.ENGLISH);
+                ZonedDateTime ukTime = ZonedDateTime.parse(updateTime, ukFormatter);
+                return ukTime.format(outputFormatter);
+
+            default:
+                throw new IllegalArgumentException("Unsupported time type: " + type);
+        }
     }
 
-    public List<CoindeskVo.Currency> convertZH(Map<String, CoindeskClient.CoindeskResponse.Currency> bpi, List<Currency> currency) {
+    public List<CoindeskVo.Currency> convertZH
+            (Map<String, CoindeskClient.CoindeskResponse.Currency> bpi, List<Currency> currency) {
         List<CoindeskVo.Currency> result = new ArrayList<>();
 
         Map<String, String> currencyMap = currency.stream().collect(Collectors.toMap(Currency::getCode, Currency::getName));
