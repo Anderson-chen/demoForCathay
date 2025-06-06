@@ -1,2 +1,1 @@
-# demoForCathay
-demoForCathay
+# CathayDemo
