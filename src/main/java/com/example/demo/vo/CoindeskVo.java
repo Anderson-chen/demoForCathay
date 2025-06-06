@@ -5,7 +5,9 @@ import lombok.Data;
 
 @Data
 public class CoindeskVo {
-    private String updatedTime;
+    private String updated;
+    private String updatedISO;
+    private String updateduk;
 
     @Data
     public static class Currency {

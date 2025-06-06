@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.time.OffsetDateTime;
 import java.util.Map;
 
 @FeignClient(name = "coindeskClient", url = "${coindesk.api.url}")
@@ -23,7 +24,7 @@ public interface CoindeskClient {
         @Data
         public static class Time {
             private String updated;
-            private String updatedISO;
+            private OffsetDateTime updatedISO;
             private String updateduk;
         }
 

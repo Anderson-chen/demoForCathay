@@ -21,7 +21,7 @@ public class CoindeskRestController {
 
     @GetMapping("/coindeskToConvert")
     public CoindeskVo callCoindeskToConvert() {
-        return coindeskService.callCoindeskToConvert();
+        return coindeskService.convertToCoindeskVo();
     }
 
 
